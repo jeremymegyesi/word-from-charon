@@ -1,0 +1,16 @@
+spring:
+    application:
+        name: CharonDataCollector
+
+charondata:
+    scheduler:
+            # default-exec-schedule: 0 0 * * * # execute every day
+            default-cron: "0 * * * * ?"
+            module-schedules:
+                transit-schedule:
+                    default-cron: "0 * * * * ?"
+                    service-crons:
+                        gabNahScheduleScraperServiceImpl: default
+    transit-schedule:
+        gab-nah:
+            url: https://www.bcferries.com/routes-fares/schedules/seasonal/GAB-NAH
