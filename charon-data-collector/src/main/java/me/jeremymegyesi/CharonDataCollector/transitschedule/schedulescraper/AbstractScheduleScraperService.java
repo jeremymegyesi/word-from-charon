@@ -2,6 +2,7 @@ package me.jeremymegyesi.CharonDataCollector.transitschedule.schedulescraper;
 
 import org.openqa.selenium.WebDriver; 
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.transaction.annotation.Transactional;
 
 import me.jeremymegyesi.CharonDataCollector.scheduler.SchedulableService;
 
@@ -12,6 +13,7 @@ public abstract class AbstractScheduleScraperService implements ScheduleScraperS
 		this.webDriver = new ChromeDriver();
     }
 
+	@Transactional
 	public void executeScheduledTask() {
 		scrapeShedule();
 		if (validateSchedule()) {

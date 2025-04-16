@@ -1,0 +1,18 @@
+services:
+  postgres:
+    build:
+      context: ./charondb-init
+    container_name: charon-db
+    environment:
+      POSTGRES_DB: charondb
+      POSTGRES_USER: charondb_owner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_DBOWNER}
+      POSTGRES_PASSWORD_FLYWAY: ${POSTGRES_PASSWORD_FLYWAY}
+      POSTGRES_PASSWORD_CHARONDATACOLLECTOR: ${POSTGRES_PASSWORD_CHARONDATACOLLECTOR}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

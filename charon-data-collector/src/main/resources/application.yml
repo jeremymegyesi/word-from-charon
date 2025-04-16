@@ -1,6 +1,26 @@
 spring:
     application:
         name: CharonDataCollector
+    datasource:
+        url: jdbc:postgresql://localhost:5433/charondb
+        username: charon_data_collector
+        password: ${POSTGRES_PASSWORD_CHARONDATACOLLECTOR}
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            default_schema: charon_data_collection
+            ddl-auto: none
+        show-sql: true
+    flyway:
+        url: jdbc:postgresql://localhost:5433/charondb
+        user: charon_flyway
+        password: ${POSTGRES_PASSWORD_FLYWAY}
+        schemas: charon_data_collection
+        driver-class-name: org.postgresql.Driver
+        # Manually set the database type to avoid the unsupported version check
+        connect-retries: 5
+        placeholders:
+            flyway.database: postgresql
 
 charondata:
     scheduler:
