@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfig;
 import me.jeremymegyesi.CharonDataCollector.scheduler.SchedulerConfig.ModuleScheduleConfig;
 
 @Component
@@ -26,15 +27,15 @@ public class DynamicSchedulerManager {
                 cronExpression = resolveCron(cronExpression, moduleScheduleConfig.getDefaultCron(), schedulerConfig.getDefaultCron());
 
                 Runnable task = () -> {
-                    SchedulableService service = schedulableServiceFactory.getService(serviceName);
+                    SchedulableService<? extends ExecutableConfig, ?> service = schedulableServiceFactory.getService(serviceName);
+                    if (service == null) {
+                        System.err.println("No service found for: " + serviceName);
+                        return;
+                    }
                     try {
-                        if (service != null) {
-                            service.executeScheduledTask();
-                        } else {
-                            System.err.println("No service found for: " + serviceName);
-                        }
-                    } catch(Exception e) {
-                        System.err.println("An error occurred while executing scheduled task for: " + serviceName);
+                        service.executeScheduledTask();
+                    } catch (Exception e) {
+                        System.err.println("An error occurred while executing scheduled task for: " + service.getClass().getSimpleName());
                     }
                 };
 

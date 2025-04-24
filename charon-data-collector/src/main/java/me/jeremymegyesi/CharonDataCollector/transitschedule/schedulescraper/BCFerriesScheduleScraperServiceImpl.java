@@ -1,34 +1,45 @@
 package me.jeremymegyesi.CharonDataCollector.transitschedule.schedulescraper;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitSchedule;
 import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitScheduleRepository;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-public class GabNahScheduleScraperServiceImpl extends AbstractScheduleScraperService {
-	private String url;
+public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraperService {
 	private final TransitScheduleRepository scheduleRepository;
+
+	public BCFerriesScheduleScraperServiceImpl(TransitScheduleRepository scheduleRepository, ScheduleScraperExecConfigFactory factory) {
+		super(factory);
+		this.scheduleRepository = scheduleRepository;
+	}
 
 	public void scrapeShedule() {
 		log.info("Scraping GAB-NAH schedule...");
-		log.info("url: " + url);
+		String url = "";
+		for (ScheduleScraperExecutableConfig config: this.configs) {
+			url = config.getScheduleUrl();
+			log.info("url: " + url);
+		}
 
 		try {
-			TransitSchedule schedule = scheduleRepository.getOne(UUID.fromString("e2fd8e6e-7bcf-4490-b9d7-f4f60b6e5c16"));
+			TransitSchedule schedule = scheduleRepository.getOne(UUID.fromString("0a77c75f-00d8-4e7c-b76c-de7f138a6d29"));
 			log.info("schedule: " + schedule.getScheduleData());
 		} catch(Exception e) {
 			log.error(e.getMessage(), e);
 		}
 		
-        // webDriver.get(url);
+        webDriver.get(url);
     }
+
+	private void scrapeSite() {
+		log.info("Scraping GAB-NAH schedule...");
+	}
 
 	public boolean validateSchedule() {
 		log.info("validating GAB-NAH schedule...");

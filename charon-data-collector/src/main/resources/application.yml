@@ -30,7 +30,4 @@ charondata:
                 transit-schedule:
                     default-cron: "0 * * * * ?"
                     service-crons:
-                        gabNahScheduleScraperServiceImpl: default
-    transit-schedule:
-        gab-nah:
-            url: https://www.bcferries.com/routes-fares/schedules/seasonal/GAB-NAH
+                        bCFerriesScheduleScraperServiceImpl: default
