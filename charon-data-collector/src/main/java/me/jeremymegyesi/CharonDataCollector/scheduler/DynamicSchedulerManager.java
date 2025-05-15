@@ -39,6 +39,8 @@ public class DynamicSchedulerManager {
                     }
                 };
 
+                // Run the task immediately in addition to scheduling it
+                new Thread(task).start();
                 DynamicScheduler.scheduleTask(serviceName, cronExpression, task);
             }
 

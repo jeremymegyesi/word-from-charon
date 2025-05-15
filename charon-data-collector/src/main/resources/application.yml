@@ -24,8 +24,8 @@ spring:
 
 charondata:
     scheduler:
-            # default-exec-schedule: 0 0 * * * # execute every day
-            default-cron: "0 * * * * ?"
+            default-cron: 0 0 * * * # execute every day
+            # default-cron: "0 * * * * ?"
             module-schedules:
                 transit-schedule:
                     default-cron: "0 * * * * ?"
