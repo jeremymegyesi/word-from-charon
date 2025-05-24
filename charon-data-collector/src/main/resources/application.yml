@@ -28,6 +28,6 @@ charondata:
             # default-cron: "0 * * * * ?"
             module-schedules:
                 transit-schedule:
-                    default-cron: "0 * * * * ?"
+                    default-cron: "0 0 * * * ?"
                     service-crons:
                         bCFerriesScheduleScraperServiceImpl: default

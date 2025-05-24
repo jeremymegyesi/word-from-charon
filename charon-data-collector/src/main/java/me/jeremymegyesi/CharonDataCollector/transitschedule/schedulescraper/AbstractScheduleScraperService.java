@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.openqa.selenium.WebDriver; 
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.jeremymegyesi.CharonDataCollector.scheduler.AbstractSchedulableService;
@@ -14,7 +15,10 @@ implements ScheduleScraperService {
 
 	public AbstractScheduleScraperService(ScheduleScraperExecConfigFactory factory) {
 		super(factory);
-		this.webDriver = new ChromeDriver();
+		ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
+		options.addArguments("--headless=new");
+		options.addArguments("--window-size=1400,600");
+		this.webDriver = new ChromeDriver(options);
 	}
 
 	@Transactional
