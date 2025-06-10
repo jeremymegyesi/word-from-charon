@@ -18,7 +18,7 @@ spring:
         schemas: charon_data_collection
         driver-class-name: org.postgresql.Driver
         # Manually set the database type to avoid the unsupported version check
-        connect-retries: 5
+        connect-retries: 3
         placeholders:
             flyway.database: postgresql
 

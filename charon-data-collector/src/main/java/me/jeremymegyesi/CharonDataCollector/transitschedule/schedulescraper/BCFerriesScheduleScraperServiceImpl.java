@@ -33,8 +33,8 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 		}
 
 		try {
-			TransitSchedule schedule = scheduleRepository.getOne(UUID.fromString("935c69bc-4313-4838-8175-359903223ce1"));
-			log.info("schedule: " + schedule.getScheduleData());
+			// TransitSchedule schedule = scheduleRepository.getOne(UUID.fromString("935c69bc-4313-4838-8175-359903223ce1"));
+			// log.info("schedule: " + schedule.getScheduleData());
 		} catch(Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -369,13 +369,19 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 	}
 
 	private LocalTime convertToLocalTime(String timeText) {
-		java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("h:mm a");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a").withLocale(Locale.ENGLISH);
 		// Normalize to uppercase and ensure a single space before AM/PM
 		timeText = timeText.trim().toUpperCase();
 		if (timeText.endsWith("AM") || timeText.endsWith("PM")) {
 			timeText = timeText.replace("AM", " AM").replace("PM", " PM").replaceAll("\\s+", " ").strip();
 		}
-		return LocalTime.parse(timeText, formatter);
+		try {
+			// Try parsing with the formatter
+			return LocalTime.parse(timeText, formatter);
+		} catch (java.time.format.DateTimeParseException e) {
+			log.error("Failed to parse time: \"" + timeText + "\". Error: " + e.getMessage());
+			return null;
+		}
 	}
 
 	private DayOfWeek convertToDayOfWeek(String dayText) {
