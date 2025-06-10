@@ -1,7 +1,7 @@
 package me.jeremymegyesi.CharonDataCollector.transitschedule.schedulescraper;
 
 public interface ScheduleScraperService {
-    void scrapeShedule();
+    void scrapeSchedule();
     boolean validateSchedule();
     void persistData();
 }

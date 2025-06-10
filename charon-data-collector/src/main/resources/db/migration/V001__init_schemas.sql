@@ -64,7 +64,7 @@ COMMENT ON CONSTRAINT fk_transit_route_transit_route_type ON charon_data_collect
 CREATE TABLE charon_data_collection.transit_schedule
 (
     id uuid,
-    collected_on_date date NOT NULL,
+    collected_on timestamp NOT NULL,
     schedule_data jsonb NOT NULL,
     transit_route_id uuid,
     PRIMARY KEY (id),

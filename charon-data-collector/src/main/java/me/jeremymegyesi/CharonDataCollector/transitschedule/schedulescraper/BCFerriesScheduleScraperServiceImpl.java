@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonDataCollector.transitschedule.ScheduleData;
+import me.jeremymegyesi.CharonDataCollector.transitschedule.TerminalScheduleData;
 import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitSchedule;
 import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitScheduleRepository;
 import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitTime;
@@ -25,27 +26,11 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 		this.scheduleRepository = scheduleRepository;
 	}
 
-	public void scrapeShedule() {
-		log.info("Scraping GAB-NAH schedule...");
-		String url = "";
-		for (ScheduleScraperExecutableConfig config: this.configs) {
-			url = config.getScheduleUrl();
-		}
-
+	public void scrapeSchedule() {
+		log.info("Scraping schedule for config: " + this.currentConfig.getConfigName());
 		try {
-			// TransitSchedule schedule = scheduleRepository.getOne(UUID.fromString("935c69bc-4313-4838-8175-359903223ce1"));
-			// log.info("schedule: " + schedule.getScheduleData());
-		} catch(Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		getScheduleDataFromTables(url);
-    }
-
-	private List<ScheduleData> getScheduleDataFromTables(String url) {
-		log.info("Getting table data...");
-		try {
-			List<ScheduleData> scheduleDataList = new java.util.ArrayList<>();
-			webDriver.get(url);
+			ScheduleData scheduleData = new ScheduleData();
+			webDriver.get(this.currentConfig.getScheduleUrl());
 			List<WebElement> tables = webDriver.findElements(By.cssSelector(".table-seasonal-schedule"))
 				.stream()
 				.filter(table -> !table.getAttribute("class").contains("schedule-collapse-header"))
@@ -54,57 +39,19 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 			// expecting onward and return tables
 			if (tables.size() != 2) {
 				log.error("Expected 2 tables, found: " + tables.size());
-				return null;
+				return;
 			}
 
-			List<String> tableNames = new ArrayList<String>();
-			tableNames.add(webDriver.findElement(By.cssSelector("h2#OnwardSchedule")).getText());
-			tableNames.add(webDriver.findElement(By.cssSelector("h2#ReturnSchedule")).getText());
-
-			for (WebElement table : tables) {
-				// Each table is a ScheduleData object, should be one for route and one for return route
-				// Map<DayOfWeek, TreeSet<TransitTime>> transitTimes = new HashMap<>();
-
-				ScheduleData scheduleData = new ScheduleData();
-				scheduleData.setTerminal(tableNames.removeFirst());
-
-				int departureIndex = -1;
-				int arrivalIndex = -1;
-				DayOfWeek dayOfWeek = null;
-				List<TransitTime> transitTimes = new ArrayList<>();
-
-				// iterate through the table rows, might be day header or might be transit time body rows
-				for (WebElement child : table.findElements(By.xpath("./*"))) {
-					// header row
-					String header = extractHeader(child);
-					if (header != null) {
-						dayOfWeek = convertToDayOfWeek(header);
-						departureIndex = getHeaderIndex("depart", child);
-						arrivalIndex = getHeaderIndex("arrive", child);
-						continue;
-					}
-					if (departureIndex == -1 || arrivalIndex == -1) {
-						log.error("Header indices could not be identified for table: " + scheduleData.getTerminal() 
-							+ " at subtable: " + dayOfWeek);
-						continue;
-					}
-					
-					// body rows
-					transitTimes.addAll(extractTimesForDay(child, departureIndex, arrivalIndex, dayOfWeek));
-				}
-
-				SortedSet<TransitTime> transitTimesSet = aggregateTransitTimes(transitTimes);
-				scheduleData.setTransitTimes(transitTimesSet);
-				scheduleDataList.add(scheduleData);
-			}
+			scheduleData.setOnwardSchedule(extractTerminalScheduleData(tables.get(0), webDriver.findElement(By.cssSelector("h2#OnwardSchedule")).getText()));
+			scheduleData.setReturnSchedule(extractTerminalScheduleData(tables.get(1), webDriver.findElement(By.cssSelector("h2#ReturnSchedule")).getText()));
 			// print results
-			log.info("SCHEDULE DATA:");
-			for (ScheduleData scheduleData : scheduleDataList) {
-				for (TransitTime transitTime : scheduleData.getTransitTimes()) {
-					log.info(transitTime.toString());
-				}
-			}
-			return scheduleDataList;
+			// log.info("SCHEDULE DATA:");
+			// for (ScheduleData scheduleData : scheduleDataList) {
+			// 	for (TransitTime transitTime : scheduleData.getTransitTimes()) {
+			// 		log.info(transitTime.toString());
+			// 	}
+			// }
+			this.schedule = scheduleData;
 		} catch (Exception e) {
 			log.error("An error occurred while getting table data: " + e.getMessage(), e);
 		} finally {
@@ -113,8 +60,43 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 				log.info("WebDriver closed.");
 			}
 		}
-		log.info("Finished getting table data.");
-		return null;
+		log.info("Retrieved schedule data for config: " + this.currentConfig.getConfigName());
+		return;
+	}
+
+	private TerminalScheduleData extractTerminalScheduleData(WebElement table, String tableName) {
+		TerminalScheduleData terminalScheduleData = new TerminalScheduleData();
+		terminalScheduleData.setTerminal(tableName);
+
+		int departureIndex = -1;
+		int arrivalIndex = -1;
+		DayOfWeek dayOfWeek = null;
+		List<TransitTime> transitTimes = new ArrayList<>();
+
+		// iterate through the table rows, might be day header or might be transit time body rows
+		for (WebElement child : table.findElements(By.xpath("./*"))) {
+			// header row
+			String header = extractHeader(child);
+			if (header != null) {
+				dayOfWeek = convertToDayOfWeek(header);
+				departureIndex = getHeaderIndex("depart", child);
+				arrivalIndex = getHeaderIndex("arrive", child);
+				continue;
+			}
+			if (departureIndex == -1 || arrivalIndex == -1) {
+				log.error("Header indices could not be identified for table: " + terminalScheduleData.getTerminal() 
+					+ " at subtable: " + dayOfWeek);
+				continue;
+			}
+			
+			// body rows
+			transitTimes.addAll(extractTimesForDay(child, departureIndex, arrivalIndex, dayOfWeek));
+		}
+
+		SortedSet<TransitTime> transitTimesSet = aggregateTransitTimes(transitTimes);
+		terminalScheduleData.setTransitTimes(transitTimesSet);
+
+		return terminalScheduleData;
 	}
 
 	private SortedSet<TransitTime> aggregateTransitTimes(List<TransitTime> transitTimes) {
@@ -393,31 +375,33 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 			return null;
 		}
 	}
-	
-	private void extractSchedule() {
-		log.info("Scraping GAB-NAH schedule...");
-	}
 
 	public boolean validateSchedule() {
-		log.info("validating GAB-NAH schedule...");
+		log.info("Validating schedule for config: " + this.currentConfig.getConfigName());
+		if (this.schedule == null || this.schedule.getOnwardSchedule() == null || this.schedule.getReturnSchedule() == null) {
+			log.error("Schedule data could not be extracted from url: " + this.configs.get(0).getScheduleUrl());
+			return false;
+		}
+
+		// TODO check if schedule has changed from most recent
+
         return true;
     }
 
 	public void persistData() {
-        log.info("Persisting GAB-NAH schedule...");
+        log.info("Persisting schedule for config: " + this.currentConfig.getConfigName());
+		if (this.schedule != null && this.schedule.getOnwardSchedule() != null && this.schedule.getReturnSchedule() != null) {
+			try {
+				TransitSchedule transitSchedule = new TransitSchedule();
+				transitSchedule.setCollectedOn(java.sql.Timestamp.valueOf(LocalDateTime.now()));
+				transitSchedule.setScheduleData(this.schedule);
+				transitSchedule.setTransitRoute(this.currentConfig.getTransitRoute());
+				scheduleRepository.save(transitSchedule);
+			} catch (Exception e) {
+				log.error("Failed to persist schedule data for config {}: " + e.getMessage(), this.currentConfig.getConfigName(), e);
+			}
+		} else {
+			log.warn("No schedule data to persist for config: " + this.currentConfig.getConfigName());
+		}
     }
-
-    public void testSelenium() {
-        log.info("Running main method for schedule scraper");
- 
-		// navigating to the website 
-		webDriver.get("https://www.scrapingcourse.com/ecommerce/"); 
- 
-		// scraping the title of the website 
-		String title = webDriver.getTitle(); 
-		log.info("Website title: " + title); 
- 
-		// closing the web driver 
-		webDriver.close(); 
-	}
 }

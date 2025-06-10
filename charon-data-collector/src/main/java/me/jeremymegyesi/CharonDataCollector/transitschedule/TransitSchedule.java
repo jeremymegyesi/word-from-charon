@@ -1,7 +1,10 @@
 package me.jeremymegyesi.CharonDataCollector.transitschedule;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.UUID;
+
+import org.hibernate.annotations.ColumnTransformer;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,8 +18,12 @@ public class TransitSchedule {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Date collectedOnDate;
-    private Object scheduleData;
+    private Timestamp collectedOn;
+    
+    @Convert(converter = ScheduleDataJsonConverter.class)
+    @Column(columnDefinition = "jsonb")
+    @ColumnTransformer(write = "?::jsonb")
+    private ScheduleData scheduleData;
 
     @OneToOne
     @JoinColumn(name = "transit_route_id")

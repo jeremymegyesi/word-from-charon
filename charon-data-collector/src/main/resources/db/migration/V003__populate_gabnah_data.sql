@@ -4,11 +4,6 @@ VALUES(gen_random_uuid(), 'FERRY');
 INSERT INTO charon_data_collection.transit_route(id, route, route_type_id)
 VALUES(gen_random_uuid(), 'GAB-NAH', (SELECT id FROM charon_data_collection.transit_route_type WHERE type = 'FERRY'));
 
-INSERT INTO charon_data_collection.transit_schedule(id, collected_on_date, schedule_data, transit_route_id)
-VALUES(gen_random_uuid(), CURRENT_DATE,
-to_jsonb('[{"field":15,"operator":0,"value":"1"},{"field":15,"operator":0,"value":"2"},55]'::text),
-(SELECT id FROM charon_data_collection.transit_route WHERE route = 'GAB-NAH'));
-
 INSERT INTO charon_data_collection.transit_schedule_exec_config (
     id, config_name, exec_service_class_name, transit_route_id, schedule_url
 )

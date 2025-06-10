@@ -5,9 +5,11 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfig;
 import me.jeremymegyesi.CharonDataCollector.scheduler.SchedulerConfig.ModuleScheduleConfig;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DynamicSchedulerManager {
@@ -29,13 +31,13 @@ public class DynamicSchedulerManager {
                 Runnable task = () -> {
                     SchedulableService<? extends ExecutableConfig, ?> service = schedulableServiceFactory.getService(serviceName);
                     if (service == null) {
-                        System.err.println("No service found for: " + serviceName);
+                        log.error("No service found for: " + serviceName);
                         return;
                     }
                     try {
                         service.executeScheduledTask();
                     } catch (Exception e) {
-                        System.err.println("An error occurred while executing scheduled task for: " + service.getClass().getSimpleName());
+                        log.error("An error occurred while executing scheduled task for: " + service.getClass().getSimpleName() + e.getMessage(), e);
                     }
                 };
 

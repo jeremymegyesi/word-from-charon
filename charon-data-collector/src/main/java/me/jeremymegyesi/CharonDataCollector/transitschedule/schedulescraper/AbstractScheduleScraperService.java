@@ -1,5 +1,6 @@
 package me.jeremymegyesi.CharonDataCollector.transitschedule.schedulescraper;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.openqa.selenium.WebDriver; 
@@ -8,10 +9,13 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.jeremymegyesi.CharonDataCollector.scheduler.AbstractSchedulableService;
+import me.jeremymegyesi.CharonDataCollector.transitschedule.ScheduleData;
 
 public abstract class AbstractScheduleScraperService extends AbstractSchedulableService<ScheduleScraperExecutableConfig, UUID>
 implements ScheduleScraperService {
 	protected WebDriver webDriver;
+	protected ScheduleData schedule;
+	protected ScheduleScraperExecutableConfig currentConfig;
 
 	public AbstractScheduleScraperService(ScheduleScraperExecConfigFactory factory) {
 		super(factory);
@@ -23,13 +27,13 @@ implements ScheduleScraperService {
 
 	@Transactional
 	public void executeScheduledTask() {
-		scrapeShedule();
-		if (validateSchedule()) {
-			persistData();
+		// Iterate through all configs
+		for (ScheduleScraperExecutableConfig config : configs) {
+				this.currentConfig = config;
+				scrapeSchedule();
+				if (validateSchedule()) {
+					persistData();
+				}
 		}
-	}
-
-	public String getCustomExecSchedule() {
-		return null;
 	}
 }
