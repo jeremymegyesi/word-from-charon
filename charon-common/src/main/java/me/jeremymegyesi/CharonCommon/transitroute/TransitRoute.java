@@ -1,4 +1,4 @@
-package me.jeremymegyesi.CharonDataCollector.transitroute;
+package me.jeremymegyesi.CharonCommon.transitroute;
 
 import java.util.UUID;
 
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "transit_route", schema = "charon_data_collection")
+@Table(name = "transit_route")
 public class TransitRoute {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

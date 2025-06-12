@@ -1,4 +1,4 @@
-package me.jeremymegyesi.CharonDataCollector.transitschedule;
+package me.jeremymegyesi.CharonCommon.transitschedule;
 
 import java.util.SortedSet;
 

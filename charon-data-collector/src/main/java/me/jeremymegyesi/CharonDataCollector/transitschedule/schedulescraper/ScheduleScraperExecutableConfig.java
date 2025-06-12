@@ -5,13 +5,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfig;
-import me.jeremymegyesi.CharonDataCollector.transitroute.TransitRoute;
+import me.jeremymegyesi.CharonCommon.transitroute.TransitRoute;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = false)
-@Table(name = "transit_schedule_exec_config", schema = "charon_data_collection")
+@Table(name = "transit_schedule_exec_config")
 public class ScheduleScraperExecutableConfig extends ExecutableConfig {
     private String scheduleUrl;
 

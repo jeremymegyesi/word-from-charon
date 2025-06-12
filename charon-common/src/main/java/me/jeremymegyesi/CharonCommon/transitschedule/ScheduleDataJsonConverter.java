@@ -1,4 +1,4 @@
-package me.jeremymegyesi.CharonDataCollector.transitschedule;
+package me.jeremymegyesi.CharonCommon.transitschedule;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,10 +27,9 @@ public class ScheduleDataJsonConverter implements AttributeConverter<Object, Str
     @Override
     public Object convertToEntityAttribute(String dbData) {
         try {
-            // Replace Object.class with your actual type if possible for type safety
-            return objectMapper.readValue(dbData, Object.class);
+            return objectMapper.readValue(dbData, ScheduleData.class);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not deserialize JSON to object", e);
+            throw new IllegalArgumentException("Could not deserialize JSON to ScheduleData", e);
         }
     }
 }

@@ -1,0 +1,29 @@
+spring:
+    application:
+        name: CharonCore
+    datasource:
+        url: jdbc:postgresql://localhost:5433/charondb
+        username: charon_core
+        password: ${POSTGRES_PASSWORD_CHARONCORE}
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        properties[hibernate.default_schema]: charon_core
+        hibernate:
+            default_schema: charon_core
+            ddl-auto: none
+        show-sql: true
+    flyway:
+        url: jdbc:postgresql://localhost:5433/charondb
+        user: charon_flyway
+        password: ${POSTGRES_PASSWORD_FLYWAY}
+        schemas: charon_core
+        driver-class-name: org.postgresql.Driver
+        # Manually set the database type to avoid the unsupported version check
+        connect-retries: 3
+        placeholders[flyway.database]: postgresql
+
+server:
+    port: 7000
+
+charondatasource:
+    port: 7001

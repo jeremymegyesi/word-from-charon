@@ -9,21 +9,18 @@ import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import me.jeremymegyesi.CharonDataCollector.transitschedule.ScheduleData;
-import me.jeremymegyesi.CharonDataCollector.transitschedule.TerminalScheduleData;
-import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitSchedule;
-import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitScheduleRepository;
-import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitTime;
-import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitTimeCondition;
+import me.jeremymegyesi.CharonCommon.transitschedule.ScheduleData;
+import me.jeremymegyesi.CharonCommon.transitschedule.TerminalScheduleData;
+import me.jeremymegyesi.CharonCommon.transitschedule.TransitScheduleRepository;
+import me.jeremymegyesi.CharonCommon.transitschedule.TransitTime;
+import me.jeremymegyesi.CharonCommon.transitschedule.TransitTimeCondition;
 
 @Slf4j
 @Service
 public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraperService {
-	private final TransitScheduleRepository scheduleRepository;
 
 	public BCFerriesScheduleScraperServiceImpl(TransitScheduleRepository scheduleRepository, ScheduleScraperExecConfigFactory factory) {
-		super(factory);
-		this.scheduleRepository = scheduleRepository;
+		super(scheduleRepository, factory);
 	}
 
 	public void scrapeSchedule() {
@@ -33,7 +30,10 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 			webDriver.get(this.currentConfig.getScheduleUrl());
 			List<WebElement> tables = webDriver.findElements(By.cssSelector(".table-seasonal-schedule"))
 				.stream()
-				.filter(table -> !table.getAttribute("class").contains("schedule-collapse-header"))
+				.filter(table -> {
+					String classAttr = table.getDomAttribute("class");
+					return classAttr == null || !classAttr.contains("schedule-collapse-header");
+				})
 				.toList();
 
 			// expecting onward and return tables
@@ -180,7 +180,7 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 			return null;
 		}
 		WebElement headerRow = row.findElement(By.tagName("tr"));
-		return headerRow.getAttribute("data-schedule-day");
+		return headerRow.getDomAttribute("data-schedule-day");
 	}
 
 	private int getHeaderIndex(String headerName, WebElement header) {
@@ -211,7 +211,10 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 
 		List<WebElement> timeRows = body.findElements(By.tagName("tr"))
 			.stream()
-			.filter(row -> row.getAttribute("class").contains("schedule-table-row"))
+			.filter(row -> {
+				String classAttr = row.getDomAttribute("class");
+				return classAttr != null && classAttr.contains("schedule-table-row");
+			})
 			.toList();
 		List<TransitTime> times = new ArrayList<>();
 
@@ -375,33 +378,4 @@ public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraper
 			return null;
 		}
 	}
-
-	public boolean validateSchedule() {
-		log.info("Validating schedule for config: " + this.currentConfig.getConfigName());
-		if (this.schedule == null || this.schedule.getOnwardSchedule() == null || this.schedule.getReturnSchedule() == null) {
-			log.error("Schedule data could not be extracted from url: " + this.configs.get(0).getScheduleUrl());
-			return false;
-		}
-
-		// TODO check if schedule has changed from most recent
-
-        return true;
-    }
-
-	public void persistData() {
-        log.info("Persisting schedule for config: " + this.currentConfig.getConfigName());
-		if (this.schedule != null && this.schedule.getOnwardSchedule() != null && this.schedule.getReturnSchedule() != null) {
-			try {
-				TransitSchedule transitSchedule = new TransitSchedule();
-				transitSchedule.setCollectedOn(java.sql.Timestamp.valueOf(LocalDateTime.now()));
-				transitSchedule.setScheduleData(this.schedule);
-				transitSchedule.setTransitRoute(this.currentConfig.getTransitRoute());
-				scheduleRepository.save(transitSchedule);
-			} catch (Exception e) {
-				log.error("Failed to persist schedule data for config {}: " + e.getMessage(), this.currentConfig.getConfigName(), e);
-			}
-		} else {
-			log.warn("No schedule data to persist for config: " + this.currentConfig.getConfigName());
-		}
-    }
 }

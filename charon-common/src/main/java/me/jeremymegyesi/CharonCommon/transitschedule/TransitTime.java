@@ -1,4 +1,4 @@
-package me.jeremymegyesi.CharonDataCollector.transitschedule;
+package me.jeremymegyesi.CharonCommon.transitschedule;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -9,7 +9,7 @@ import java.util.SortedSet;
 import lombok.Data;
 
 @Data
-public class TransitTime {
+public class TransitTime implements Comparable<TransitTime> {
     private LocalTime departure;
     private LocalTime arrival;
     private SortedSet<DayOfWeek> excludedDaysOfWeek;
@@ -30,5 +30,10 @@ public class TransitTime {
             return false;
         }
         return this.departure.equals(other.departure) && this.arrival.equals(other.arrival);
+    }
+
+    @Override
+    public int compareTo(TransitTime other) {
+        return this.departure.compareTo(other.departure);
     }
 }

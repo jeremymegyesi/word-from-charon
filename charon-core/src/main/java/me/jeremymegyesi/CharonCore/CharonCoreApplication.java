@@ -1,30 +1,16 @@
 package me.jeremymegyesi.CharonCore;
 
-import java.io.IOException;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
-@RestController
-@RequestMapping("/api")
+@SpringBootApplication(scanBasePackages = {"me.jeremymegyesi.CharonCore", "me.jeremymegyesi.CharonCommon"})
+@EntityScan(basePackages = {"me.jeremymegyesi.CharonCore", "me.jeremymegyesi.CharonCommon"})
+@EnableJpaRepositories(basePackages = {"me.jeremymegyesi.CharonCore", "me.jeremymegyesi.CharonCommon"})
 public class CharonCoreApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CharonCoreApplication.class, args);
-	}
-
-	@GetMapping("/currentPosition")
-	public String home() throws IOException {
-		// FerrySchedule schedule = FerrySchedule.getInstance();
-		// schedule.updateSchedule();
-		// JSONObject obj = new JSONObject();
-		// obj.put("latitude", schedule.latitude);
-		// obj.put("longitude", schedule.longitude);
-		// obj.put("progress", schedule.progress);
-		return "abc";
 	}
 }

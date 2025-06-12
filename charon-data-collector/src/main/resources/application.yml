@@ -7,6 +7,7 @@ spring:
         password: ${POSTGRES_PASSWORD_CHARONDATACOLLECTOR}
         driver-class-name: org.postgresql.Driver
     jpa:
+        properties[hibernate.default_schema]: charon_data_collection
         hibernate:
             default_schema: charon_data_collection
             ddl-auto: none
@@ -19,8 +20,7 @@ spring:
         driver-class-name: org.postgresql.Driver
         # Manually set the database type to avoid the unsupported version check
         connect-retries: 3
-        placeholders:
-            flyway.database: postgresql
+        placeholders[flyway.database]: postgresql
 
 charondata:
     scheduler:
@@ -31,3 +31,6 @@ charondata:
                     default-cron: "0 0 * * * ?"
                     service-crons:
                         bCFerriesScheduleScraperServiceImpl: default
+
+server:
+    port: 7001
