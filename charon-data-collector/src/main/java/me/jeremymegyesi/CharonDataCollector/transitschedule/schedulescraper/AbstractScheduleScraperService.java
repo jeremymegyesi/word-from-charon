@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonDataCollector.scheduler.AbstractSchedulableService;
+import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEvent;
 import me.jeremymegyesi.CharonCommon.transitschedule.ScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitSchedule;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitScheduleRepository;
+import me.jeremymegyesi.CharonCommon.kafka.KafkaProducer;
 
 @Slf4j
 public abstract class AbstractScheduleScraperService extends AbstractSchedulableService<ScheduleScraperExecutableConfig, UUID>
@@ -21,14 +23,16 @@ implements ScheduleScraperService {
 	protected final TransitScheduleRepository scheduleRepository;
 	protected ScheduleData schedule;
 	protected ScheduleScraperExecutableConfig currentConfig;
+	private final KafkaProducer scheduleKafkaProducer;
 
-	public AbstractScheduleScraperService(TransitScheduleRepository scheduleRepository, ScheduleScraperExecConfigFactory factory) {
+	public AbstractScheduleScraperService(TransitScheduleRepository scheduleRepository, ScheduleScraperExecConfigFactory factory, KafkaProducer scheduleKafkaProducer) {
 		super(factory);
 		ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
 		options.addArguments("--headless=new");
 		options.addArguments("--window-size=1400,600");
 		this.webDriver = new ChromeDriver(options);
 		this.scheduleRepository = scheduleRepository;
+		this.scheduleKafkaProducer = scheduleKafkaProducer;
 	}
 
 	@Transactional
@@ -77,6 +81,7 @@ implements ScheduleScraperService {
 				transitSchedule.setScheduleData(this.schedule);
 				transitSchedule.setTransitRoute(this.currentConfig.getTransitRoute());
 				scheduleRepository.save(transitSchedule);
+				scheduleKafkaProducer.send("transit-schedule", transitSchedule.getTransitRoute().getRoute().toString(), new ScheduleUpdatedEvent(transitSchedule));
 			} catch (Exception e) {
 				log.error("Failed to persist schedule data for config {}: " + e.getMessage(), this.currentConfig.getConfigName(), e);
 			}

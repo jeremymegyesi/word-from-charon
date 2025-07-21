@@ -21,6 +21,18 @@ spring:
         # Manually set the database type to avoid the unsupported version check
         connect-retries: 3
         placeholders[flyway.database]: postgresql
+    kafka:
+        bootstrap-servers: host.docker.internal:9092
+        consumer:
+            group-id: charon-consumer-group
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        properties:
+            "[spring.json.trusted.packages]": "*"
 
 charondata:
     scheduler:

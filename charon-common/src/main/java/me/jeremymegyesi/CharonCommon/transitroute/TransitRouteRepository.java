@@ -6,4 +6,5 @@ import java.util.UUID;
 
 @Repository
 public interface TransitRouteRepository extends JpaRepository<TransitRoute, UUID> {
+    TransitRoute findByRoute(String route);
 }

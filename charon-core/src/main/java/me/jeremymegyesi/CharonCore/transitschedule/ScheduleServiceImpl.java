@@ -1,17 +1,25 @@
 package me.jeremymegyesi.CharonCore.transitschedule;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonCommon.ApiBrokerService;
+import me.jeremymegyesi.CharonCommon.kafka.KafkaConsumer;
+import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEvent;
+import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEventJsonConverter;
+import me.jeremymegyesi.CharonCommon.transitroute.TransitRouteRepository;
 import me.jeremymegyesi.CharonCommon.transitschedule.TerminalScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitSchedule;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitScheduleRepository;
@@ -20,9 +28,12 @@ import me.jeremymegyesi.CharonCommon.transitschedule.TransitTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ScheduleServiceImpl implements ScheduleService {
+public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
     private final TransitScheduleRepository transitScheduleRepository;
+    private final TransitRouteRepository transitRouteRepository;
     private final ApiBrokerService apiBrokerService;
+    private final ScheduleUpdatedEventJsonConverter scheduleUpdatedEventJsonConverter;
+
     @Value("${charondatasource.port}")
     private String dataPort;
     
@@ -33,7 +44,9 @@ public class ScheduleServiceImpl implements ScheduleService {
             // Get from charon-data-collector
             log.info("fetching schedule from charon-data-collector for transit route: {}", transitRouteCode);
             try {
-                schedule = (TransitSchedule) apiBrokerService.fetchDataFromApi(dataPort, "/schedule/" + transitRouteCode, TransitSchedule.class);
+                TransitSchedule fetchedSchedule = (TransitSchedule) apiBrokerService.fetchDataFromApi(dataPort, "/schedule/" + transitRouteCode, TransitSchedule.class);
+                schedule = copySchedule(fetchedSchedule);
+                transitScheduleRepository.save(schedule);
             } catch (Exception e) {
                 log.error("Failed to map response to TransitSchedule", e);
                 return null;
@@ -78,5 +91,32 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
         return nextDepartureTimes;
+    }
+
+    @Override
+    @KafkaListener(id = "transit-schedule-core-consumer", topics = "transit-schedule", groupId = "charon-consumer-group")
+    public void listen(Object event) {
+        event = ((ConsumerRecord<?, ?>) event).value();
+        ScheduleUpdatedEvent scheduleUpdatedEvent =
+            scheduleUpdatedEventJsonConverter.convertToEntityAttribute(event.toString());
+        this.handleScheduleUpdatedEvent(scheduleUpdatedEvent);
+    }
+
+    @Transactional
+    private void handleScheduleUpdatedEvent(ScheduleUpdatedEvent event) {
+        log.info("Handling schedule updated event for transit route: {}", event.getUpdatedSchedule().getTransitRoute().getRoute());
+        // Process the updated schedule as needed
+        TransitSchedule incoming = event.getUpdatedSchedule();
+        TransitSchedule newSchedule = copySchedule(incoming);
+
+        transitScheduleRepository.save(newSchedule);
+    }
+
+    private TransitSchedule copySchedule(TransitSchedule original) {
+        TransitSchedule copy = new TransitSchedule();
+        copy.setCollectedOn(java.sql.Timestamp.valueOf(LocalDateTime.now()));
+        copy.setScheduleData(original.getScheduleData());
+        copy.setTransitRoute(transitRouteRepository.findByRoute(original.getTransitRoute().getRoute()));
+        return copy;
     }
 }
