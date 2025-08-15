@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import me.jeremymegyesi.CharonCommon.kafka.KafkaProducer;
 import me.jeremymegyesi.CharonCommon.transitschedule.ScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TerminalScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitScheduleRepository;
@@ -19,8 +20,8 @@ import me.jeremymegyesi.CharonCommon.transitschedule.TransitTimeCondition;
 @Service
 public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraperService {
 
-	public BCFerriesScheduleScraperServiceImpl(TransitScheduleRepository scheduleRepository, ScheduleScraperExecConfigFactory factory) {
-		super(scheduleRepository, factory);
+	public BCFerriesScheduleScraperServiceImpl(TransitScheduleRepository scheduleRepository, ScheduleScraperExecConfigFactory factory, KafkaProducer scheduleKafkaProducer) {
+		super(scheduleRepository, factory, scheduleKafkaProducer);
 	}
 
 	public void scrapeSchedule() {
