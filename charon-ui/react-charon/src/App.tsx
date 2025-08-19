@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import {Header} from './Header'
 import { RouteList } from './RouteList'
-import { RouteInsights } from './RouteInsights'
-import './styles/globals.css' // Ensure you have a styles.css file for global styles
+import { RouteInsightsPage } from './RouteInsightsPage'
 
 export type TransitRoute = {
   id: string
@@ -24,23 +24,17 @@ export type TransitRoute = {
 }
 
 export default function App() {
-  const [selectedRoute, setSelectedRoute] = useState<TransitRoute | null>(null)
-
-  const handleRouteSelect = (route: TransitRoute) => {
-    setSelectedRoute(route)
-  }
-
-  const handleBackToList = () => {
-    setSelectedRoute(null)
-  }
-
   return (
-    <div className="min-h-screen bg-background">
-      {selectedRoute ? (
-        <RouteInsights route={selectedRoute} onBack={handleBackToList} />
-      ) : (
-        <RouteList onRouteSelect={handleRouteSelect} />
-      )}
-    </div>
+    <Router>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <Routes>
+          <Route path="/" element={<RouteList />} />
+          <Route path="/preview_page.html" element={<Navigate to="/" replace />} />
+          <Route path="/:routeSlug/insights" element={<RouteInsightsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }

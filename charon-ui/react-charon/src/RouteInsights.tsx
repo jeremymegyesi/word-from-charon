@@ -74,7 +74,7 @@ export function RouteInsights({ route, onBack }: RouteInsightsProps) {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Left Column - Next Departures & Status */}
           <div className="lg:col-span-1 space-y-6">
             {/* Departures from Origin */}
