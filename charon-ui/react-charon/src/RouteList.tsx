@@ -35,7 +35,9 @@ export function RouteList() {
     .filter(route => route.popularity >= 75)
     .sort((a, b) => b.popularity - a.popularity)
 
-  const routesByType = mockRoutes.reduce((acc, route) => {
+  const allRoutes = [] as TransitRoute[]; // ajax call to fetch all routes
+
+  const routesByType = allRoutes.reduce((acc, route) => {
     if (!acc[route.type]) acc[route.type] = []
     acc[route.type].push(route)
     return acc
@@ -118,6 +120,7 @@ export function RouteList() {
             </Card>
           ))}
         </div>
+
       </section>
 
       {/* Routes by Category */}
@@ -133,7 +136,7 @@ export function RouteList() {
                   {routes.length}
                 </Badge>
               </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {routes.map((route) => (
                   <Card 
                     key={route.id} 

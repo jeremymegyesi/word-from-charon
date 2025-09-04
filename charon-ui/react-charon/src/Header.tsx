@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { MapPin } from 'lucide-react'
 
 export function Header() {
   const navigate = useNavigate()
