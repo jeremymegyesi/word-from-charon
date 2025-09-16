@@ -5,15 +5,14 @@ import java.util.UUID;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
 @Data
-@Table(name = "transit_route")
-public class TransitRoute {
+@MappedSuperclass
+public abstract class AbstractTransitRoute {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String route;
+    private String code;
 
     @ManyToOne
     @JoinColumn(name = "route_type_id")

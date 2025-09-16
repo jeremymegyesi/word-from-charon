@@ -1,5 +1,5 @@
 import { MapPin } from 'lucide-react'
-import { TransitRoute } from './App'
+import { TransitRoute } from './route.types'
 
 interface VehicleMapProps {
   position: {

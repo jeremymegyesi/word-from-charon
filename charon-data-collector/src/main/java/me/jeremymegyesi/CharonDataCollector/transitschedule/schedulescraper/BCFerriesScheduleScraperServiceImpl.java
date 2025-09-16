@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonCommon.kafka.KafkaProducer;
 import me.jeremymegyesi.CharonCommon.transitschedule.ScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TerminalScheduleData;
-import me.jeremymegyesi.CharonCommon.transitschedule.TransitScheduleRepository;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitTime;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitTimeCondition;
+import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitScheduleRepository;
 
 @Slf4j
 @Service

@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonDataCollector.scheduler.AbstractSchedulableService;
+import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitSchedule;
+import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitScheduleRepository;
 import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEvent;
 import me.jeremymegyesi.CharonCommon.transitschedule.ScheduleData;
-import me.jeremymegyesi.CharonCommon.transitschedule.TransitSchedule;
-import me.jeremymegyesi.CharonCommon.transitschedule.TransitScheduleRepository;
 import me.jeremymegyesi.CharonCommon.kafka.KafkaProducer;
 
 @Slf4j
@@ -81,7 +81,7 @@ implements ScheduleScraperService {
 				transitSchedule.setScheduleData(this.schedule);
 				transitSchedule.setTransitRoute(this.currentConfig.getTransitRoute());
 				scheduleRepository.save(transitSchedule);
-				scheduleKafkaProducer.send("transit-schedule", transitSchedule.getTransitRoute().getRoute().toString(), new ScheduleUpdatedEvent(transitSchedule));
+				scheduleKafkaProducer.send("transit-schedule", transitSchedule.getTransitRoute().getCode().toString(), new ScheduleUpdatedEvent<>(transitSchedule));
 			} catch (Exception e) {
 				log.error("Failed to persist schedule data for config {}: " + e.getMessage(), this.currentConfig.getConfigName(), e);
 			}

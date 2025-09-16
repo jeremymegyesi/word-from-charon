@@ -7,12 +7,11 @@ import org.hibernate.annotations.ColumnTransformer;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import me.jeremymegyesi.CharonCommon.transitroute.TransitRoute;;
+import me.jeremymegyesi.CharonCommon.transitroute.AbstractTransitRoute;
 
-@Entity
 @Data
-@Table(name = "transit_schedule")
-public class TransitSchedule {
+@MappedSuperclass
+public abstract class AbstractTransitSchedule<T extends AbstractTransitRoute> {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -25,6 +24,6 @@ public class TransitSchedule {
     private ScheduleData scheduleData;
 
     @OneToOne
-    @JoinColumn(name = "transit_route_id")
-    private TransitRoute transitRoute;
+    @JoinColumn(name = "transit_route_id", insertable = false, updatable = false)
+    private T transitRoute;
 }

@@ -19,11 +19,9 @@ import me.jeremymegyesi.CharonCommon.ApiBrokerService;
 import me.jeremymegyesi.CharonCommon.kafka.KafkaConsumer;
 import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEvent;
 import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEventJsonConverter;
-import me.jeremymegyesi.CharonCommon.transitroute.TransitRouteRepository;
 import me.jeremymegyesi.CharonCommon.transitschedule.TerminalScheduleData;
-import me.jeremymegyesi.CharonCommon.transitschedule.TransitSchedule;
-import me.jeremymegyesi.CharonCommon.transitschedule.TransitScheduleRepository;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitTime;
+import me.jeremymegyesi.CharonCore.transitroute.TransitRouteRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
     
     public TransitSchedule getCurrentSchedule(String transitRouteCode) {
         // See if schedule exists for the given transit route ID
-        TransitSchedule schedule = transitScheduleRepository.findTopByTransitRoute_RouteOrderByCollectedOnDesc(transitRouteCode);
+        TransitSchedule schedule = transitScheduleRepository.findTopByTransitRoute_CodeOrderByCollectedOnDesc(transitRouteCode);
         if (schedule == null) {
             // Get from charon-data-collector
             log.info("fetching schedule from charon-data-collector for transit route: {}", transitRouteCode);
@@ -93,18 +91,19 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
         return nextDepartureTimes;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     @KafkaListener(id = "transit-schedule-core-consumer", topics = "transit-schedule", groupId = "charon-consumer-group")
     public void listen(Object event) {
         event = ((ConsumerRecord<?, ?>) event).value();
-        ScheduleUpdatedEvent scheduleUpdatedEvent =
-            scheduleUpdatedEventJsonConverter.convertToEntityAttribute(event.toString());
+        ScheduleUpdatedEvent<TransitSchedule> scheduleUpdatedEvent =
+            (ScheduleUpdatedEvent<TransitSchedule>) scheduleUpdatedEventJsonConverter.convertToEntityAttribute(event.toString());
         this.handleScheduleUpdatedEvent(scheduleUpdatedEvent);
     }
 
     @Transactional
-    private void handleScheduleUpdatedEvent(ScheduleUpdatedEvent event) {
-        log.info("Handling schedule updated event for transit route: {}", event.getUpdatedSchedule().getTransitRoute().getRoute());
+    private void handleScheduleUpdatedEvent(ScheduleUpdatedEvent<TransitSchedule> event) {
+        log.info("Handling schedule updated event for transit route: {}", event.getUpdatedSchedule().getTransitRoute().getCode());
         // Process the updated schedule as needed
         TransitSchedule incoming = event.getUpdatedSchedule();
         TransitSchedule newSchedule = copySchedule(incoming);
@@ -116,7 +115,7 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
         TransitSchedule copy = new TransitSchedule();
         copy.setCollectedOn(java.sql.Timestamp.valueOf(LocalDateTime.now()));
         copy.setScheduleData(original.getScheduleData());
-        copy.setTransitRoute(transitRouteRepository.findByRoute(original.getTransitRoute().getRoute()));
+        copy.setTransitRoute(transitRouteRepository.findByCode(original.getTransitRoute().getCode()));
         return copy;
     }
 }

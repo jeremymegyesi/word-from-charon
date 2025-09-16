@@ -11,6 +11,10 @@ spring:
         hibernate:
             default_schema: charon_core
             ddl-auto: none
+            # naming:
+            #     # Include schema to qualify table names to avoid conflicts
+            #     physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+            #     implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         show-sql: true
     flyway:
         url: jdbc:postgresql://localhost:5433/charondb

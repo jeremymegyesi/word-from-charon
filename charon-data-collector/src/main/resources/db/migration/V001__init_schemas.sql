@@ -36,10 +36,10 @@ COMMENT ON CONSTRAINT uk_transit_route_type_type ON charon_data_collection.trans
 CREATE TABLE charon_data_collection.transit_route
 (
     id uuid,
-    route character varying(16) NOT NULL,
+    code character varying(16) NOT NULL,
     route_type_id uuid,
     PRIMARY KEY (id),
-    CONSTRAINT uk_transit_route_route UNIQUE (route),
+    CONSTRAINT uk_transit_route_code UNIQUE (code),
     CONSTRAINT fk_transit_route_transit_route_type FOREIGN KEY (route_type_id)
         REFERENCES charon_data_collection.transit_route_type (id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -52,7 +52,7 @@ GRANT INSERT, SELECT, UPDATE, DELETE, TRUNCATE, TRIGGER ON TABLE charon_data_col
 COMMENT ON TABLE charon_data_collection.transit_route
     IS 'A transit route for which data will be collected';
 
-COMMENT ON CONSTRAINT uk_transit_route_route ON charon_data_collection.transit_route
+COMMENT ON CONSTRAINT uk_transit_route_code ON charon_data_collection.transit_route
     IS 'Transit route code';
 
 COMMENT ON CONSTRAINT fk_transit_route_transit_route_type ON charon_data_collection.transit_route

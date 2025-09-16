@@ -1,9 +1,9 @@
 import { ArrowLeft, Clock, MapPin, Calendar, AlertTriangle, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
-import { Card } from './react-charon-lib/card'
-import { Button } from './react-charon-lib/button'
-import { Badge } from './react-charon-lib/badge'
-import { Separator } from './react-charon-lib/separator'
-import { TransitRoute } from './App'
+import { Card } from '../react-charon-lib/card'
+import { Button } from '../react-charon-lib/button'
+import { Badge } from '../react-charon-lib/badge'
+import { Separator } from '../react-charon-lib/separator'
+import { TransitRoute } from './route.types'
 import { VehicleMap } from './VehicleMap'
 
 interface RouteInsightsProps {
@@ -52,7 +52,7 @@ export function RouteInsights({ route, onBack }: RouteInsightsProps) {
             <div className="flex items-center gap-3">
               <span className="text-2xl">{getTypeIcon(route.type)}</span>
               <div>
-                <h1>{route.name}</h1>
+                <h1>{route.displayName}</h1>
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
                   <MapPin className="w-3 h-3" />
                   <span>{route.from} ↔ {route.to}</span>

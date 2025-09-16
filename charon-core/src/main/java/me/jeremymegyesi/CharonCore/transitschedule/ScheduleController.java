@@ -3,7 +3,6 @@ package me.jeremymegyesi.CharonCore.transitschedule;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import me.jeremymegyesi.CharonCommon.transitschedule.TransitSchedule;
 
 import java.time.LocalTime;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/{transitRouteCode}/next")
-    Map<String, SortedSet<LocalTime>> getMethodName(@PathVariable String transitRouteCode, @RequestParam(required = false, defaultValue = "1") int count) {
+    Map<String, SortedSet<LocalTime>> getNextDeparture(@PathVariable String transitRouteCode, @RequestParam(required = false, defaultValue = "1") int count) {
         return scheduleService.getNextDepartureTimes(transitRouteCode, count);
     }
     

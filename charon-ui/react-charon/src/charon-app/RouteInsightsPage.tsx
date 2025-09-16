@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { RouteInsights } from './RouteInsights'
-import { findRouteBySlug, mockRoutes } from './utils/routeUtils'
+import { findRouteBySlug, mockRoutes } from '../utils/routeUtils'
 
 export function RouteInsightsPage() {
   const { routeSlug } = useParams<{ routeSlug: string }>()

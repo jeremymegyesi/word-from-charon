@@ -1,4 +1,4 @@
-import { TransitRoute } from '../App'
+import { TransitRoute } from '../charon-app/route.types'
 
 export function createRouteSlug(routeName: string): string {
   return routeName
@@ -10,14 +10,14 @@ export function createRouteSlug(routeName: string): string {
 }
 
 export function findRouteBySlug(routes: TransitRoute[], slug: string): TransitRoute | undefined {
-  return routes.find(route => createRouteSlug(route.name) === slug)
+  return routes.find(route => createRouteSlug(route.displayName) === slug)
 }
 
 // Mock routes data - moved from RouteList component so it can be shared
 export const mockRoutes: TransitRoute[] = [
   {
     id: '1',
-    name: 'Seattle - Vancouver Express',
+    displayName: 'Seattle - Vancouver Express',
     type: 'ferry',
     from: 'Seattle',
     to: 'Vancouver',
@@ -31,7 +31,7 @@ export const mockRoutes: TransitRoute[] = [
   },
   {
     id: '2',
-    name: 'LAX - SFO Shuttle',
+    displayName: 'LAX - SFO Shuttle',
     type: 'plane',
     from: 'Los Angeles',
     to: 'San Francisco',
@@ -46,7 +46,7 @@ export const mockRoutes: TransitRoute[] = [
   },
   {
     id: '3',
-    name: 'Downtown Circulator',
+    displayName: 'Downtown Circulator',
     type: 'bus',
     from: 'Union Station',
     to: 'Financial District',
@@ -60,7 +60,7 @@ export const mockRoutes: TransitRoute[] = [
   },
   {
     id: '4',
-    name: 'Coast Starlight',
+    displayName: 'Coast Starlight',
     type: 'train',
     from: 'Los Angeles',
     to: 'Seattle',
@@ -74,7 +74,7 @@ export const mockRoutes: TransitRoute[] = [
   },
   {
     id: '5',
-    name: 'Golden Gate Ferry',
+    displayName: 'Golden Gate Ferry',
     type: 'ferry',
     from: 'San Francisco',
     to: 'Sausalito',
@@ -88,7 +88,7 @@ export const mockRoutes: TransitRoute[] = [
   },
   {
     id: '6',
-    name: 'Regional Express',
+    displayName: 'Regional Express',
     type: 'bus',
     from: 'Sacramento',
     to: 'San Francisco',
