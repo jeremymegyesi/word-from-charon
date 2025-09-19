@@ -10,7 +10,7 @@ import me.jeremymegyesi.CharonCommon.transitschedule.AbstractTransitSchedule;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScheduleUpdatedEvent<T extends AbstractTransitSchedule<?>> {
+public class ScheduleUpdatedEvent<T extends AbstractTransitSchedule> {
     @JsonProperty("updatedSchedule")
     private T updatedSchedule;
 }

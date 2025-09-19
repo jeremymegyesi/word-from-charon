@@ -9,6 +9,6 @@ import me.jeremymegyesi.CharonCore.transitroute.TransitRoute;
 
 @Repository
 public interface TransitScheduleRepository extends JpaRepository<TransitSchedule, UUID> {
-    TransitSchedule findTopByTransitRouteOrderByCollectedOnDesc(TransitRoute transitRoute);
-    TransitSchedule findTopByTransitRoute_CodeOrderByCollectedOnDesc(String routeCode);
+    TransitSchedule findTopByRouteOrderByCollectedOnDesc(TransitRoute route);
+    TransitSchedule findTopByRoute_CodeOrderByCollectedOnDesc(String routeCode);
 }

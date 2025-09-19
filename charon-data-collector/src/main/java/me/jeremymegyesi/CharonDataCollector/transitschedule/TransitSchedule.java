@@ -9,9 +9,9 @@ import me.jeremymegyesi.CharonDataCollector.transitroute.TransitRoute;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TransitSchedule extends AbstractTransitSchedule<TransitRoute> {
+public class TransitSchedule extends AbstractTransitSchedule {
     // Additional fields or methods specific to the core module can be added here
     @ManyToOne
     @JoinColumn(name = "transit_route_id")
-    private TransitRoute transitRoute;
+    private TransitRoute route;
 }

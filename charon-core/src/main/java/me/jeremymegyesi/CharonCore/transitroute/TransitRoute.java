@@ -1,5 +1,7 @@
 package me.jeremymegyesi.CharonCore.transitroute;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
@@ -25,5 +27,6 @@ public class TransitRoute extends AbstractTransitRoute {
     private String toLocation;
 
     @OneToOne(mappedBy = "route")
+    @JsonBackReference
     private TransitSchedule schedule;
 }

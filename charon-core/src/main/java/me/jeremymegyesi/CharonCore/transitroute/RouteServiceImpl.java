@@ -12,7 +12,10 @@ public class RouteServiceImpl implements RouteService {
     private final TransitRouteRepository routeRepository;
 
     public List<TransitRoute> getAll(String type) {
-        // Implementation to fetch all routes, possibly filtering by type
-        return routeRepository.findAll(); // Placeholder return
+        return routeRepository.findAll();
+    }
+
+    public TransitRoute getByCode(String transitRouteCode) {
+        return routeRepository.findByCode(transitRouteCode);
     }
 }

@@ -87,4 +87,23 @@ COMMENT ON CONSTRAINT fk_transit_schedule_transit_route ON charon_core.transit_s
     IS 'Links schedule to route';
 
 
+-- # TRANSIT MAP CONFIG
+CREATE TABLE charon_core.transit_map_config
+(
+    id uuid,
+    transit_route_id uuid,
+    map_type character varying(32) NOT NULL,
+    config jsonb NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT uk_transit_map_config_route UNIQUE (transit_route_id),
+    CONSTRAINT fk_transit_map_config_transit_route FOREIGN KEY (transit_route_id)
+        REFERENCES charon_core.transit_route (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+GRANT INSERT, SELECT, UPDATE, DELETE, TRUNCATE, TRIGGER ON TABLE charon_core.transit_map_config TO charon_core;
+
+
 GRANT ALL ON ALL TABLES IN SCHEMA charon_core TO charondb_owner;

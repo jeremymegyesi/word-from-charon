@@ -10,7 +10,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final TransitScheduleRepository transitScheduleRepository;
 
     public TransitSchedule getCurrentSchedule(String transitRouteCode) {
-        return transitScheduleRepository.findTopByTransitRoute_CodeOrderByCollectedOnDesc(transitRouteCode);
+        return transitScheduleRepository.findTopByRoute_CodeOrderByCollectedOnDesc(transitRouteCode);
     }
     
 }

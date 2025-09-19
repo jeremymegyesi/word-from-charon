@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import {Header} from './Header'
-import RouteList from './route-list/RouteList.container'
-import { RouteInsightsPage } from './RouteInsightsPage'
+import RouteList from './route/route-list/RouteList.container'
+import RouteInsightsPage from './route/route-insights/RouteInsightsPage.container'
 
 export default function App() {
   return (

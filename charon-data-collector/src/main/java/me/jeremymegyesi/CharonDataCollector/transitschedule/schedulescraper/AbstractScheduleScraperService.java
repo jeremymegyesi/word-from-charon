@@ -59,7 +59,7 @@ implements ScheduleScraperService {
 		}
 
 		// Check if schedule has changed from the last persisted schedule
-		TransitSchedule lastSchedule = scheduleRepository.findTopByTransitRouteOrderByCollectedOnDesc(this.currentConfig.getTransitRoute());
+		TransitSchedule lastSchedule = scheduleRepository.findTopByRouteOrderByCollectedOnDesc(this.currentConfig.getTransitRoute());
 		if (lastSchedule != null && lastSchedule.getScheduleData() != null) {
 			ScheduleData lastScheduleData = lastSchedule.getScheduleData();
 			if (lastScheduleData.equals(this.schedule)) {
@@ -79,9 +79,9 @@ implements ScheduleScraperService {
 				TransitSchedule transitSchedule = new TransitSchedule();
 				transitSchedule.setCollectedOn(java.sql.Timestamp.valueOf(LocalDateTime.now()));
 				transitSchedule.setScheduleData(this.schedule);
-				transitSchedule.setTransitRoute(this.currentConfig.getTransitRoute());
+				transitSchedule.setRoute(this.currentConfig.getTransitRoute());
 				scheduleRepository.save(transitSchedule);
-				scheduleKafkaProducer.send("transit-schedule", transitSchedule.getTransitRoute().getCode().toString(), new ScheduleUpdatedEvent<>(transitSchedule));
+				scheduleKafkaProducer.send("transit-schedule", transitSchedule.getRoute().getCode().toString(), new ScheduleUpdatedEvent<>(transitSchedule));
 			} catch (Exception e) {
 				log.error("Failed to persist schedule data for config {}: " + e.getMessage(), this.currentConfig.getConfigName(), e);
 			}

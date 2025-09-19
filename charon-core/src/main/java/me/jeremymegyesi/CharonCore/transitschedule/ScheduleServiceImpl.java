@@ -37,7 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
     
     public TransitSchedule getCurrentSchedule(String transitRouteCode) {
         // See if schedule exists for the given transit route ID
-        TransitSchedule schedule = transitScheduleRepository.findTopByTransitRoute_CodeOrderByCollectedOnDesc(transitRouteCode);
+        TransitSchedule schedule = transitScheduleRepository.findTopByRoute_CodeOrderByCollectedOnDesc(transitRouteCode);
         if (schedule == null) {
             // Get from charon-data-collector
             log.info("fetching schedule from charon-data-collector for transit route: {}", transitRouteCode);
@@ -103,7 +103,7 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
 
     @Transactional
     private void handleScheduleUpdatedEvent(ScheduleUpdatedEvent<TransitSchedule> event) {
-        log.info("Handling schedule updated event for transit route: {}", event.getUpdatedSchedule().getTransitRoute().getCode());
+        log.info("Handling schedule updated event for transit route: {}", event.getUpdatedSchedule().getRoute().getCode());
         // Process the updated schedule as needed
         TransitSchedule incoming = event.getUpdatedSchedule();
         TransitSchedule newSchedule = copySchedule(incoming);
@@ -115,7 +115,7 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
         TransitSchedule copy = new TransitSchedule();
         copy.setCollectedOn(java.sql.Timestamp.valueOf(LocalDateTime.now()));
         copy.setScheduleData(original.getScheduleData());
-        copy.setTransitRoute(transitRouteRepository.findByCode(original.getTransitRoute().getCode()));
+        copy.setRoute(transitRouteRepository.findByCode(original.getRoute().getCode()));
         return copy;
     }
 }
