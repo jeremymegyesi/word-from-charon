@@ -3,6 +3,7 @@ export type VehicleMapConfig = {
     config: {
         zoom: number;
         fleet: string;
+        fleet_name: string;
         names: boolean;
         width: string;
         height: string;

@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import CharonLogo from '../assets/charon.svg';
 
 export function Header() {
   const navigate = useNavigate()
@@ -16,7 +17,7 @@ export function Header() {
         >
           {/* Sample Logo */}
           <div className="flex items-center justify-center w-13 h-13">
-            <img src="src/assets/charon.svg" />
+            <img src={CharonLogo} />
           </div>
           
           {/* App Name */}

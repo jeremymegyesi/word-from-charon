@@ -61,7 +61,7 @@ export function RouteInsights({ route, onBack }: RouteInsightsProps) {
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="w-5 h-5 text-primary" />
-                <h2>From {route.from}</h2>
+                <h2>{route.from} Departures</h2>
               </div>
               <div className="space-y-3">
                 {route.departures.fromOrigin.map((time, index) => (
@@ -90,7 +90,7 @@ export function RouteInsights({ route, onBack }: RouteInsightsProps) {
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="w-5 h-5 text-primary" />
-                <h2>From {route.to}</h2>
+                <h2>{route.to} Departures</h2>
               </div>
               <div className="space-y-3">
                 {route.departures.fromDestination.map((time, index) => (

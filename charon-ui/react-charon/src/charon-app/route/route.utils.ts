@@ -36,7 +36,7 @@ export const convertTransitRoute = (routeResponse: TransitRouteResponse): Partia
     currentPosition: {
       lat: 49.1659,
       lng: -123.9401,
-      vehicle: 'ISLAND KWIGWIS'
+      vehicle: 'ISLAND KWIGWIS & ISLAND GWAWIS'
     },
   };
 
