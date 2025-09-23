@@ -27,6 +27,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ApiBrokerService apiBrokerService;
     private final TransitScheduleDTOConverter scheduleDTOConverter;
 
+    private final Object lock = new Object();
+
     @Value("${charondatasource.port}")
     private String dataPort;
     
@@ -39,13 +41,25 @@ public class ScheduleServiceImpl implements ScheduleService {
             try {
                 TransitScheduleDTO fetchedSchedule = (TransitScheduleDTO) apiBrokerService.fetchDataFromApi(dataPort, "/schedule/" + transitRouteCode, TransitScheduleDTO.class);
                 schedule = scheduleDTOConverter.mapToInternalModel(fetchedSchedule);
-                transitScheduleRepository.save(schedule);
+                saveNewSchedule(schedule);
             } catch (Exception e) {
                 log.error("Failed to map response to TransitSchedule", e);
                 return null;
             }
         }
         return schedule;
+    }
+
+    private void saveNewSchedule(TransitSchedule schedule) {
+        synchronized (this.lock) {
+            // Make sure schedule does not already exist
+            TransitSchedule oldSchedule = transitScheduleRepository.findTopByRoute_CodeOrderByCollectedOnDesc(schedule.getRoute().getCode());
+            if (schedule.getScheduleData() != null && oldSchedule != null && oldSchedule.getScheduleData() != null &&
+                schedule.getScheduleData().equals(oldSchedule.getScheduleData())) {
+                return;
+            }
+            transitScheduleRepository.save(schedule);
+        }
     }
 
     public Map<String, SortedSet<LocalTime>> getNextDepartureTimes(String transitRouteCode, int chunkSize) {
@@ -57,7 +71,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         
         // Get current time
-        LocalTime currentTime = LocalTime.now();
+        LocalTime currentTime = LocalTime.now().withSecond(0).withNano(0); // Only comparing minutes
         Map<String, SortedSet<LocalTime>> nextDepartureTimes = new java.util.HashMap<>();
         List<TerminalScheduleData> scheduleDataList = Arrays.asList(
             schedule.getScheduleData().getOnwardSchedule(),
@@ -69,7 +83,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             
             TransitTime nextTime = terminalScheduleData.getTransitTimes()
                 .stream()
-                .filter(tt -> tt.getDeparture().isAfter(currentTime))
+                .filter(tt -> tt.getDeparture().isAfter(currentTime) || tt.getDeparture().equals(currentTime))
                 .sorted()
                 .findFirst()
                 .orElse(null);
@@ -93,6 +107,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         TransitScheduleDTO incoming = event.getUpdatedSchedule();
         TransitSchedule mappedSchedule = scheduleDTOConverter.mapToInternalModel(incoming);
 
-        transitScheduleRepository.save(mappedSchedule);
+        saveNewSchedule(mappedSchedule);
     }
 }

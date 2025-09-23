@@ -71,12 +71,19 @@ export const to12HourFormat = (time: string): string => {
 };
 
 /*** Fetch routes and enrich with upcoming departures ***/
-export async function fetchRoutesEnrichWithDepartures(api: AxiosInstance, departureCount?: number, routeCode?: string): Promise<Partial<TransitRoute[]>> {
+export async function fetchRoutesEnrichWithDepartures(api: AxiosInstance, routeCode?: string, departureCount?: number): Promise<Partial<TransitRoute[]>> {
   const routeUrl = '/routes' + (routeCode ? `/${routeCode}`: '');
   let res = await api.get(routeUrl);
   const baseRoutes = 
     (!Array.isArray(res.data) ? [res.data] : res.data as TransitRouteResponse[])
     .map(convertTransitRoute) as TransitRoute[];
+
+    const enriched = fetchDeparturesEnrichRoutes(api, baseRoutes, departureCount);
+
+  return enriched;
+}
+
+export async function fetchDeparturesEnrichRoutes(api: AxiosInstance, baseRoutes: TransitRoute[], departureCount?: number): Promise<Partial<TransitRoute[]>> {
   const departureUrlParam = departureCount ? `?count=${departureCount}` : '';
 
   const enriched = await Promise.all(
@@ -107,6 +114,7 @@ export async function fetchRoutesEnrichWithDepartures(api: AxiosInstance, depart
           }
       })
   );
+
   return enriched;
 }
 
