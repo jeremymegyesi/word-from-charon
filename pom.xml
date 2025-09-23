@@ -1,0 +1,4 @@
+<modules>
+    <module>charon-core</module>
+    <module>charon-data-collector</module>
+</modules>

@@ -14,21 +14,23 @@ import me.jeremymegyesi.CharonCommon.transitschedule.ScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TerminalScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitTime;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitTimeCondition;
+import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfigFactory;
+import me.jeremymegyesi.CharonDataCollector.transitroute.TransitRouteRepository;
 import me.jeremymegyesi.CharonDataCollector.transitschedule.TransitScheduleRepository;
 
 @Slf4j
 @Service
 public class BCFerriesScheduleScraperServiceImpl extends AbstractScheduleScraperService {
 
-	public BCFerriesScheduleScraperServiceImpl(TransitScheduleRepository scheduleRepository, ScheduleScraperExecConfigFactory factory, KafkaProducer scheduleKafkaProducer) {
-		super(scheduleRepository, factory, scheduleKafkaProducer);
+	public BCFerriesScheduleScraperServiceImpl(TransitScheduleRepository scheduleRepository, TransitRouteRepository routeRepository, ExecutableConfigFactory factory, KafkaProducer scheduleKafkaProducer) {
+		super(scheduleRepository, routeRepository, factory, scheduleKafkaProducer);
 	}
 
 	public void scrapeSchedule() {
 		log.info("Scraping schedule for config: " + this.currentConfig.getConfigName());
 		try {
 			ScheduleData scheduleData = new ScheduleData();
-			webDriver.get(this.currentConfig.getScheduleUrl());
+			webDriver.get(this.currentServiceParams.getScrapeUrl());
 			List<WebElement> tables = webDriver.findElements(By.cssSelector(".table-seasonal-schedule"))
 				.stream()
 				.filter(table -> {

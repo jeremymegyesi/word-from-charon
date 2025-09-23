@@ -65,7 +65,7 @@ export function RouteInsights({ route, onBack }: RouteInsightsProps) {
               </div>
               <div className="space-y-3">
                 {route.departures.fromOrigin.map((time, index) => (
-                  <div key={`origin-${time}`} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div key={`origin-${time}`} className="flex items-center justify-between p-1 bg-muted rounded-lg">
                     <div className="flex items-center gap-2">
                       <span>{time}</span>
                       <ArrowRight className="w-3 h-3 text-muted-foreground" />
@@ -94,8 +94,8 @@ export function RouteInsights({ route, onBack }: RouteInsightsProps) {
               </div>
               <div className="space-y-3">
                 {route.departures.fromDestination.map((time, index) => (
-                  <div key={`destination-${time}`} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div className="flex items-center gap-2">
+                  <div key={`destination-${time}`} className="flex items-center justify-between bg-muted rounded-lg">
+                    <div className="flex items-center p-1 gap-2">
                       <span>{time}</span>
                       <ArrowRight className="w-3 h-3 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">{route.from}</span>

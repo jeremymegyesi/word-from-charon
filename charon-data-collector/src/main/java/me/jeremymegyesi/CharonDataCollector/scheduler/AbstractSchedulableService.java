@@ -6,17 +6,17 @@ import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfig;
 import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfigFactory;
 import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfigRepository;
 
-public abstract class AbstractSchedulableService<T extends ExecutableConfig, ID> implements SchedulableService<T, ID> {
-    protected List<T> configs;
-    protected ExecutableConfigFactory<T> configFactory;
+public abstract class AbstractSchedulableService<T> implements SchedulableService {
+    protected List<ExecutableConfig> configs;
+	protected ExecutableConfig currentConfig;
+    protected T currentServiceParams;
+    protected ExecutableConfigFactory configFactory;
+    protected ExecutableConfigRepository configRepository;
 
-    public AbstractSchedulableService(ExecutableConfigFactory<T> configFactory) {
+    public AbstractSchedulableService(ExecutableConfigFactory configFactory) {
         this.configFactory = configFactory;
         this.configs = configFactory.getConfigs(this.getClass().getSimpleName());
     }
 
-    @Override
-    public ExecutableConfigRepository<T, ID> getConfigRepository() {
-        return null;
-    }
+    protected abstract T getServiceParams();
 }

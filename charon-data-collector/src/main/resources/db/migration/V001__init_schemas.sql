@@ -84,25 +84,6 @@ COMMENT ON CONSTRAINT fk_transit_schedule_transit_route ON charon_data_collectio
     IS 'Links schedule to route';
 
 
--- # TRANSIT STATUS
-
-CREATE TABLE charon_data_collection.transit_status
-(
-    id uuid,
-    status character varying(32) NOT NULL,
-    PRIMARY KEY (id),
-    CONSTRAINT uk_transit_status_status UNIQUE (status)
-);
-
-GRANT INSERT, SELECT, UPDATE, DELETE, TRUNCATE, TRIGGER ON TABLE charon_data_collection.transit_status TO charon_data_collector;
-
-COMMENT ON TABLE charon_data_collection.transit_status
-    IS 'Status of a transit route';
-
-COMMENT ON CONSTRAINT uk_transit_status_status ON charon_data_collection.transit_status
-    IS 'Must have unique status code';
-
-
 -- # TRANSIT SAMPLE
 
 CREATE TABLE charon_data_collection.transit_sample
@@ -111,13 +92,8 @@ CREATE TABLE charon_data_collection.transit_sample
     location character varying(32) NOT NULL,
     sampled_on timestamp with time zone NOT NULL,
     transit_route_id uuid,
-    transit_status_id uuid,
+    transit_status jsonb,
     PRIMARY KEY (id),
-    CONSTRAINT fk_transit_sample_transit_status FOREIGN KEY (transit_status_id)
-        REFERENCES charon_data_collection.transit_status (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-        NOT VALID,
     CONSTRAINT fk_transit_sample_transit_route FOREIGN KEY (transit_route_id)
         REFERENCES charon_data_collection.transit_route (id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -130,8 +106,6 @@ GRANT INSERT, SELECT, UPDATE, DELETE, TRUNCATE, TRIGGER ON TABLE charon_data_col
 COMMENT ON TABLE charon_data_collection.transit_sample
     IS 'Data sample collected indicating transit route status';
 
-COMMENT ON CONSTRAINT fk_transit_sample_transit_status ON charon_data_collection.transit_sample
-    IS 'Links status to sample';
 COMMENT ON CONSTRAINT fk_transit_sample_transit_route ON charon_data_collection.transit_sample
     IS 'Links route to sample';
 

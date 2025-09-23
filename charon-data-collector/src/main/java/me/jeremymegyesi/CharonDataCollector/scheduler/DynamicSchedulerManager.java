@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.jeremymegyesi.CharonDataCollector.executableconfig.ExecutableConfig;
 import me.jeremymegyesi.CharonDataCollector.scheduler.SchedulerConfig.ModuleScheduleConfig;
 
 @Slf4j
@@ -29,7 +28,7 @@ public class DynamicSchedulerManager {
                 cronExpression = resolveCron(cronExpression, moduleScheduleConfig.getDefaultCron(), schedulerConfig.getDefaultCron());
 
                 Runnable task = () -> {
-                    SchedulableService<? extends ExecutableConfig, ?> service = schedulableServiceFactory.getService(serviceName);
+                    SchedulableService service = schedulableServiceFactory.getService(serviceName);
                     if (service == null) {
                         log.error("No service found for: " + serviceName);
                         return;

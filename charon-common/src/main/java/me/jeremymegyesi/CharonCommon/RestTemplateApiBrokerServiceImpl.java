@@ -13,6 +13,7 @@ public class RestTemplateApiBrokerServiceImpl implements ApiBrokerService {
     }
     
     public Object fetchDataFromApi(String port, String endpoint, Class<?> responseType) {
+        // TODO: replace with env var
         String url = "http://localhost:" + port + endpoint;
         try {
             return restTemplate.getForObject(url, responseType);

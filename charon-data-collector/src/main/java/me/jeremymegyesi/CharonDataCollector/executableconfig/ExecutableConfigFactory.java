@@ -2,9 +2,17 @@ package me.jeremymegyesi.CharonDataCollector.executableconfig;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
-public interface ExecutableConfigFactory<T extends ExecutableConfig> {
-    JpaRepository<T, ?> getRepository();
-    List<T> getConfigs(String execServiceClassName);
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class ExecutableConfigFactory {
+
+    private final ExecutableConfigRepository configRepository;
+
+    public List<ExecutableConfig> getConfigs(String execServiceClassName) {
+        return configRepository.findAllByExecServiceClassName(execServiceClassName);
+    }
 }

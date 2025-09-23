@@ -1,36 +1,31 @@
 package me.jeremymegyesi.CharonCore.transitschedule;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.jeremymegyesi.CharonCommon.ApiBrokerService;
-import me.jeremymegyesi.CharonCommon.kafka.KafkaConsumer;
-import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEvent;
-import me.jeremymegyesi.CharonCommon.kafka.events.ScheduleUpdatedEventJsonConverter;
+import me.jeremymegyesi.CharonCommon.kafka.events.schedule.ScheduleUpdatedEvent;
 import me.jeremymegyesi.CharonCommon.transitschedule.TerminalScheduleData;
 import me.jeremymegyesi.CharonCommon.transitschedule.TransitTime;
-import me.jeremymegyesi.CharonCore.transitroute.TransitRouteRepository;
+import me.jeremymegyesi.CharonCore.externalmapping.converters.TransitScheduleDTOConverter;
+import me.jeremymegyesi.CharonCore.externalmapping.externalmodels.TransitScheduleDTO;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
+public class ScheduleServiceImpl implements ScheduleService {
     private final TransitScheduleRepository transitScheduleRepository;
-    private final TransitRouteRepository transitRouteRepository;
     private final ApiBrokerService apiBrokerService;
-    private final ScheduleUpdatedEventJsonConverter scheduleUpdatedEventJsonConverter;
+    private final TransitScheduleDTOConverter scheduleDTOConverter;
 
     @Value("${charondatasource.port}")
     private String dataPort;
@@ -42,8 +37,8 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
             // Get from charon-data-collector
             log.info("fetching schedule from charon-data-collector for transit route: {}", transitRouteCode);
             try {
-                TransitSchedule fetchedSchedule = (TransitSchedule) apiBrokerService.fetchDataFromApi(dataPort, "/schedule/" + transitRouteCode, TransitSchedule.class);
-                schedule = copySchedule(fetchedSchedule);
+                TransitScheduleDTO fetchedSchedule = (TransitScheduleDTO) apiBrokerService.fetchDataFromApi(dataPort, "/schedule/" + transitRouteCode, TransitScheduleDTO.class);
+                schedule = scheduleDTOConverter.mapToInternalModel(fetchedSchedule);
                 transitScheduleRepository.save(schedule);
             } catch (Exception e) {
                 log.error("Failed to map response to TransitSchedule", e);
@@ -91,31 +86,13 @@ public class ScheduleServiceImpl implements ScheduleService, KafkaConsumer {
         return nextDepartureTimes;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    @KafkaListener(id = "transit-schedule-core-consumer", topics = "transit-schedule", groupId = "charon-consumer-group")
-    public void listen(Object event) {
-        event = ((ConsumerRecord<?, ?>) event).value();
-        ScheduleUpdatedEvent<TransitSchedule> scheduleUpdatedEvent =
-            (ScheduleUpdatedEvent<TransitSchedule>) scheduleUpdatedEventJsonConverter.convertToEntityAttribute(event.toString());
-        this.handleScheduleUpdatedEvent(scheduleUpdatedEvent);
-    }
-
     @Transactional
-    private void handleScheduleUpdatedEvent(ScheduleUpdatedEvent<TransitSchedule> event) {
+    public void handleScheduleUpdatedEvent(ScheduleUpdatedEvent<TransitScheduleDTO> event) {
         log.info("Handling schedule updated event for transit route: {}", event.getUpdatedSchedule().getRoute().getCode());
         // Process the updated schedule as needed
-        TransitSchedule incoming = event.getUpdatedSchedule();
-        TransitSchedule newSchedule = copySchedule(incoming);
+        TransitScheduleDTO incoming = event.getUpdatedSchedule();
+        TransitSchedule mappedSchedule = scheduleDTOConverter.mapToInternalModel(incoming);
 
-        transitScheduleRepository.save(newSchedule);
-    }
-
-    private TransitSchedule copySchedule(TransitSchedule original) {
-        TransitSchedule copy = new TransitSchedule();
-        copy.setCollectedOn(java.sql.Timestamp.valueOf(LocalDateTime.now()));
-        copy.setScheduleData(original.getScheduleData());
-        copy.setRoute(transitRouteRepository.findByCode(original.getRoute().getCode()));
-        return copy;
+        transitScheduleRepository.save(mappedSchedule);
     }
 }

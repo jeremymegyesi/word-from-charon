@@ -16,5 +16,5 @@ public class TransitRoute extends AbstractTransitRoute {
     // Additional fields or methods specific to the collector module can be added here
 
     @OneToMany(mappedBy = "route")
-    private List<TransitSchedule> schedule;
+    private List<TransitSchedule> schedules;
 }
