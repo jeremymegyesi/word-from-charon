@@ -47,7 +47,9 @@ const RouteInsightsPageContainer: React.FC = () => {
     // update route with up-to-date departures
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentTime(new Date());
+            const curr_time = new Date();
+            setCurrentTime(curr_time);
+            timeRef.current = curr_time;
 
             const refreshRouteTimes = async () => {
                 try {
