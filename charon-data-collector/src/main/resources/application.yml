@@ -42,7 +42,10 @@ charondata:
                 transit-schedule:
                     default-cron: "0 0 * * * ?"
                     service-crons:
-                        bCFerriesScheduleScraperServiceImpl: default
+                        bCFerriesScheduleScraperServiceImpl: "default"
 
 server:
     port: 7001
+
+charonenv:
+    baseUrl: http://localhost

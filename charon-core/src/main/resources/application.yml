@@ -47,3 +47,7 @@ server:
 
 charondatasource:
     port: 7001
+
+charonenv:
+    baseUrl: http://localhost
+    appUrl: http://localhost:5173
