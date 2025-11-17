@@ -204,32 +204,6 @@ export {
   SheetTitle,
   SheetDescription,
 } from './components/Sheet';
-export { 
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInput,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSkeleton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarRail,
-  SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
-} from './components/Sidebar';
 export { Skeleton } from './components/Skeleton';
 export { Slider } from './components/Slider';
 export { Toaster } from './components/Sonner';
@@ -248,8 +222,10 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/Tabs';
 export { TextArea } from './components/TextArea';
 export { Toggle, toggleVariants } from './components/Toggle';
 export { ToggleGroup, ToggleGroupItem } from './components/ToggleGroup';
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './components/Tooltip';
+export { Tooltip } from './components/Tooltip';
 
 // utils
 export { cn } from './utils/utils';
 export { useIsMobile } from './utils/use-mobile';
+
+export { Spinner } from './components/Spinner';

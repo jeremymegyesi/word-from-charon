@@ -4,9 +4,10 @@ import { TransitRoute } from '../route.types';
 interface RouteInsightsPageProps {
   route: TransitRoute | undefined;
   handleBack: () => void;
+  onViewSchedule: () => void;
 };
 
-const RouteInsightsPage: React.FC<RouteInsightsPageProps> = ({ route, handleBack }) => {
+const RouteInsightsPage: React.FC<RouteInsightsPageProps> = ({ route, handleBack, onViewSchedule }) => {
 
   if (!route) {
     return (
@@ -25,7 +26,7 @@ const RouteInsightsPage: React.FC<RouteInsightsPageProps> = ({ route, handleBack
     );
   }
 
-  return <RouteInsights route={route} onBack={handleBack} />;
+  return <RouteInsights route={route} onBack={handleBack} onViewSchedule={onViewSchedule} />;
 }
 
 export default RouteInsightsPage;

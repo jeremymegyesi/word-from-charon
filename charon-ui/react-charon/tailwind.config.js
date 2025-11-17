@@ -8,6 +8,9 @@ module.exports = {
     extend: {
       colors: {
         primary: '#790f54',
+        'primary-dull': '#724a66ff',
+        'primary-accent': '#833aadff',
+        'primary-accent-soft': '#f4eafaff',
         'primary-foreground': '#ffffff',
       },
       width: {
@@ -15,6 +18,9 @@ module.exports = {
       },
       height: {
         '13': '3.25rem',
+      },
+      animation: {
+        'spin-slow': 'spin 1.5s linear infinite',
       },
     },
   },

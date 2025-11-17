@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import {Header} from './Header'
-import RouteList from './route/route-list/RouteList.container'
-import RouteInsightsPage from './route/route-insights/RouteInsightsPage.container'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {Header} from './Header';
+import RouteList from './route/route-list/RouteList.container';
+import RouteInsightsPage from './route/route-insights/RouteInsightsPage.container';
+import ScheduleView from './schedule/schedule-view/ScheduleView.container';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
           <Route path="/" element={<RouteList />} />
           <Route path="/preview_page.html" element={<Navigate to="/" replace />} />
           <Route path="/:routeSlug/insights" element={<RouteInsightsPage />} />
+          <Route path="/:routeSlug/schedule" element={<ScheduleView />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

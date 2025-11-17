@@ -5,8 +5,9 @@ import VehicleMap from '../../vehicle-map/VehicleMap.container'
 import { getTypeIcon, getStatusColor } from '../route.utils'
 
 interface RouteInsightsProps {
-  route: TransitRoute
-  onBack: () => void
+  route: TransitRoute;
+  onBack: () => void;
+  onViewSchedule: () => void;
 }
 
 const getStatusIcon = (status: TransitRoute['status']) => {
@@ -17,7 +18,7 @@ const getStatusIcon = (status: TransitRoute['status']) => {
   }
 }
 
-export function RouteInsights({ route, onBack }: RouteInsightsProps) {
+export function RouteInsights({ route, onBack, onViewSchedule }: RouteInsightsProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -117,7 +118,7 @@ export function RouteInsights({ route, onBack }: RouteInsightsProps) {
 
             {/* Full Schedule Button */}
             <div className="pt-4">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={onViewSchedule}>
                 <Calendar className="w-4 h-4 mr-2" />
                 View Full Schedule
               </Button>

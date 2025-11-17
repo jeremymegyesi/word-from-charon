@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import RouteList from './RouteList';
-import axios from 'axios';
+import api from '../../api';
 import { TransitRoute } from '../route.types';
 import { fetchDeparturesEnrichRoutes, fetchRoutesEnrichWithDepartures } from "../route.utils";
 import { sanitizeRouteSlug } from '../route.utils';
@@ -24,11 +24,6 @@ const RouteListContainer: React.FC = () => {
 
     const [currentTime, setCurrentTime] = useState(new Date());
     const timeRef = useRef(currentTime);
-
-    const api = axios.create({
-        // TODO: update to env var
-        baseURL: 'http://localhost:7000'
-    });
 
     // keep timeRef updated
     useEffect(() => {

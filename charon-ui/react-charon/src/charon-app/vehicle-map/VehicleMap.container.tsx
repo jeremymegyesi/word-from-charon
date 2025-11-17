@@ -2,7 +2,7 @@ import { VehicleMap } from './VehicleMap';
 import { TransitRoute } from '../route/route.types';
 import { VehicleMapConfig } from './VehicleMap.types';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { TransitRouteResponse } from '../route/route-list/RouteList.types';
 
 interface VehicleMapContainerProps {
@@ -26,10 +26,6 @@ const mapMapConfigResponse = (res: MapConfigResponse): VehicleMapConfig => {
 const VehicleMapContainer: React.FC<VehicleMapContainerProps> = ({route}) => {
     const [mapConfig, setMapConfig] = useState<VehicleMapConfig>();
     useEffect(() => {
-        const api = axios.create({ 
-            // TODO: update to env var
-            baseURL: 'http://localhost:7000'
-        });
         const fetchMapConfig = async () => {
             try {
                 const res = await api.get<MapConfigResponse>(`/map/${route.code}`);

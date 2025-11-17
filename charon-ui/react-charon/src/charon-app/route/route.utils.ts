@@ -1,3 +1,5 @@
+import api from '../api';
+import { to12HourFormat } from '../timeUtils';
 import { TransitRouteResponse, TransitRouteType } from './route-list/RouteList.types';
 import { TransitRoute } from './route.types'
 import { AxiosInstance } from 'axios';
@@ -57,18 +59,11 @@ export const getMatchingScheduleKey = (shortName: string, scrapedNames: string[]
   return matchingKey;
 };
 
-/*** Convert 24-hour time (HH:mm:ss) to 12-hour format with AM/PM ***/
-export const to12HourFormat = (time: string): string => {
-  if (!time.match(/^\d{1,2}:\d{2}:\d{2}$/)) {
-    return time; // return original if format is unexpected
-  }
-  const [hourStr, minuteStr] = time.split(':');
-  let hour = parseInt(hourStr, 10);
-  const minute = minuteStr;
-  const ampm = hour >= 12 ? 'pm' : 'am';
-  hour = hour % 12 || 12;
-  return `${hour}:${minute} ${ampm}`;
-};
+export async function fetchRoute(routeCode: string): Promise<Partial<TransitRoute>> {
+  const res = await api.get(`/routes/${routeCode}`);
+  const route = convertTransitRoute(res.data as TransitRouteResponse);
+  return route;
+}
 
 /*** Fetch routes and enrich with upcoming departures ***/
 export async function fetchRoutesEnrichWithDepartures(api: AxiosInstance, routeCode?: string, departureCount?: number): Promise<Partial<TransitRoute[]>> {

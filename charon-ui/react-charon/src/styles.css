@@ -1,0 +1,42 @@
+/* require a tbody parent */
+.table-alternating-row > tbody > tr:nth-child(odd) {
+    background-color: #f3f4f6; /* Tailwind's gray-100 */
+}
+
+.table-alternating-row > tbody > tr:nth-child(even) {
+    background-color: #ffffff; /* Tailwind's white */
+}
+
+.table-alternating-row > tbody > tr:hover {
+    background-color: #d7d7d7; /* Tailwind's indigo-100 */
+}
+
+/* target the tr element that carries the class (match data-slot for extra specificity) */
+tr.next-departure-row {
+    background-color: #ffefb0 !important; /* Tailwind's yellow-200 */
+}
+
+/* Add a small right-pointing arrow at the left of the row (inside first cell) */
+tr.next-departure-row > td:first-child {
+    position: relative;
+    padding-left: 1.2rem; /* make room for the arrow */
+}
+
+tr.next-departure-row > td:first-child::before {
+    content: "";
+    position: absolute;
+    left: 0.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 8px solid #790f54; /* arrow color */
+    pointer-events: none;
+}
+
+tr.cancelled-departure-row {
+    background-color: #ff1c4d26 !important;
+    color: #6b7280 !important; /* Tailwind's gray-500 */
+}

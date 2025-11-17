@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchRouteBySlug, isPastTime } from './RouteInsightsPage.utils';
-import axios from "axios";
+import api from '../../api';
 import RouteInsightsPage from "./RouteInsightsPage";
 import { useEffect, useRef, useState } from "react";
 import { TransitRoute } from "../route.types";
@@ -13,10 +13,6 @@ const RouteInsightsPageContainer: React.FC = () => {
     const routeRef = useRef(enrichedRoute);
     const [currentTime, setCurrentTime] = useState(new Date());
     const timeRef = useRef(currentTime);
-    const api = axios.create({
-        // TODO: update to env var
-        baseURL: 'http://localhost:7000'
-    });
     const departureCount = 5;
 
     // keep routeRef updated
@@ -83,7 +79,11 @@ const RouteInsightsPageContainer: React.FC = () => {
         navigate('/');
     };
 
-    return <RouteInsightsPage route={enrichedRoute} handleBack={handleBack} />;
+    const onViewSchedule = () => {
+        navigate(`/${routeSlug}/schedule`);
+    };
+
+    return <RouteInsightsPage route={enrichedRoute} handleBack={handleBack} onViewSchedule={onViewSchedule} />;
 }
 
 export default RouteInsightsPageContainer;
